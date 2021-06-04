@@ -364,7 +364,8 @@ public class Autocomplete extends
     }
 
     public void setValue(String value) {
-        getElement().executeJs("this._applyValue(\"" + value + "\");");
+        textField.setValue(value);
+//        getElement().executeJs("this._applyValue(\"" + value + "\");");
     }
 
     @Override

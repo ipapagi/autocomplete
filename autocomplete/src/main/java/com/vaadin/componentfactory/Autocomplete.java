@@ -45,6 +45,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import com.vaadin.componentfactory.Autocomplete.AutocompleteValueAppliedEvent;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
  * Server-side component for the <code>vcf-autocomplete</code> element.
@@ -463,5 +464,9 @@ public class Autocomplete extends
     public ShortcutRegistration addFocusShortcut(Key key,
             KeyModifier... keyModifiers) {
         return textField.addFocusShortcut(key, keyModifiers);
+    }
+    
+    public void addThemeVariants(TextFieldVariant... variants) {
+        textField.addThemeVariants(variants);
     }
 }

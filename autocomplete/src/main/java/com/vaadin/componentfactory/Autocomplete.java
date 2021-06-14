@@ -45,6 +45,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import com.vaadin.componentfactory.Autocomplete.AutocompleteValueAppliedEvent;
+import com.vaadin.flow.component.KeyDownEvent;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 
 /**
@@ -469,4 +470,18 @@ public class Autocomplete extends
     public void addThemeVariants(TextFieldVariant... variants) {
         textField.addThemeVariants(variants);
     }
+
+    public void addKeyDownListener(Key key,
+            ComponentEventListener<KeyDownEvent> listener,
+            KeyModifier... modifiers) {
+        textField.addKeyDownListener(key, listener, modifiers);
+    }
+    
+    public void addKeyDownListener(ComponentEventListener<KeyDownEvent> listener) {
+        textField.addKeyDownListener(listener);
+    }
+    
+//    public TextField getTextField() {
+//        return textField;
+//    }
 }

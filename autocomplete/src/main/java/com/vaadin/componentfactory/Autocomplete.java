@@ -72,6 +72,9 @@ public class Autocomplete extends
     private static final String PLACEHOLDER_PROP = "placeholder";
     private static final String CASESENSITIVE_PROP = "caseSensitive";
 
+    private boolean finalValue = false;
+    private String cachedValue = "";
+    
     @Id
     private TextField textField;
 
@@ -80,6 +83,21 @@ public class Autocomplete extends
      */
     public Autocomplete() {
         textField.setSizeFull();
+        addValueChangeListener((event) -> {
+            finalValue = true;
+        });
+//        addChangeListener((event) -> {
+//            if (finalValue) {
+//                finalValue = false;
+//                setValue(event.getValue());
+//            }        
+//        });
+        addAutocompleteValueAppliedListener((event) -> {
+            if (finalValue) {
+                finalValue = false;
+                setValue(event.getValue());
+            }        
+        });
     }
 
     /**
@@ -100,7 +118,8 @@ public class Autocomplete extends
      */
     @Synchronize(property = VALUE_PROP, value = "value-changed")
     public String getValue() {
-        return getElement().getProperty(VALUE_PROP, "");
+//        return getElement().getProperty(VALUE_PROP, "");
+        return cachedValue;
     }
 
     /**
@@ -366,6 +385,7 @@ public class Autocomplete extends
     }
 
     public void setValue(String value) {
+        cachedValue = value;
         textField.setValue(value);
 //        getElement().executeJs("this._applyValue(\"" + value + "\");");
     }
@@ -481,7 +501,7 @@ public class Autocomplete extends
         textField.addKeyDownListener(listener);
     }
     
-//    public TextField getTextField() {
-//        return textField;
-//    }
+    public TextField getTextField() {
+        return textField;
+    }
 }

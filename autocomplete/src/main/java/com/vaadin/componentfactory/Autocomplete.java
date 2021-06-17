@@ -47,6 +47,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import com.vaadin.componentfactory.Autocomplete.AutocompleteValueAppliedEvent;
 import com.vaadin.flow.component.KeyDownEvent;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import java.util.function.BiConsumer;
 
 /**
  * Server-side component for the <code>vcf-autocomplete</code> element.
@@ -74,6 +75,8 @@ public class Autocomplete extends
 
     private boolean finalValue = false;
     private String cachedValue = "";
+    private ValueChangeListener<? super AutocompleteValueAppliedEvent> lastListener;
+    BiConsumer<String, String> customListener = null;
     
     @Id
     private TextField textField;
@@ -86,17 +89,29 @@ public class Autocomplete extends
         addValueChangeListener((event) -> {
             finalValue = true;
         });
-//        addChangeListener((event) -> {
-//            if (finalValue) {
-//                finalValue = false;
-//                setValue(event.getValue());
-//            }        
-//        });
+        addValueClearListener((event) -> {
+            cachedValue = "";
+        });
+        textField.addValueChangeListener((event) -> {
+            cachedValue = event.getValue();
+        });
+        addChangeListener((event) -> {
+            cachedValue = event.getValue();
+        });
+        textField.addBlurListener((event) -> {
+            if (customListener != null) {
+                customListener.accept("blur", cachedValue);
+            }
+            setValue(cachedValue);
+        });
         addAutocompleteValueAppliedListener((event) -> {
             if (finalValue) {
                 finalValue = false;
                 setValue(event.getValue());
-            }        
+            }
+            if (customListener != null) {
+                customListener.accept("applied", cachedValue);
+            }
         });
     }
 
@@ -418,6 +433,7 @@ public class Autocomplete extends
     @Override
     public Registration addValueChangeListener(
             ValueChangeListener<? super AutocompleteValueAppliedEvent> listener) {
+        lastListener = listener;
         return addAutocompleteValueAppliedListener(event -> {
             listener.valueChanged(event);
         });
@@ -501,7 +517,7 @@ public class Autocomplete extends
         textField.addKeyDownListener(listener);
     }
     
-    public TextField getTextField() {
-        return textField;
+    public void addCustomChangeCallback(BiConsumer<String, String> listener) {
+        customListener = listener;
     }
 }

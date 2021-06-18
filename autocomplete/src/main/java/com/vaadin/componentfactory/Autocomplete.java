@@ -73,6 +73,7 @@ public class Autocomplete extends
     private static final String PLACEHOLDER_PROP = "placeholder";
     private static final String CASESENSITIVE_PROP = "caseSensitive";
 
+    private boolean dirty = false;
     private boolean finalValue = false;
     private String cachedValue = "";
     private ValueChangeListener<? super AutocompleteValueAppliedEvent> lastListener;
@@ -91,18 +92,21 @@ public class Autocomplete extends
         });
         addValueClearListener((event) -> {
             cachedValue = "";
+            dirty = true;
         });
         textField.addValueChangeListener((event) -> {
             cachedValue = event.getValue();
         });
         addChangeListener((event) -> {
             cachedValue = event.getValue();
+            dirty = true;
         });
         textField.addBlurListener((event) -> {
-            if (customListener != null) {
+            if (customListener != null && dirty) {
                 customListener.accept("blur", cachedValue);
             }
             setValue(cachedValue);
+            dirty = false;
         });
         addAutocompleteValueAppliedListener((event) -> {
             if (finalValue) {
@@ -112,6 +116,7 @@ public class Autocomplete extends
             if (customListener != null) {
                 customListener.accept("applied", cachedValue);
             }
+            dirty = false;
         });
     }
 

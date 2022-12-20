@@ -93,6 +93,9 @@ public class Autocomplete extends
         addValueChangeListener((event) -> {
             finalValue = true;
         });
+        addFocusListener((t) -> {
+            oldValue = getValue();
+        });
 //        addFocusListener((event) -> {
 //            String jsScript = "var objAc = document.getElementsByTagName(\"vcf-autocomplete-overlay\");";
 //            jsScript += "if (objAc[0] != null) {";";

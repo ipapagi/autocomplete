@@ -46,7 +46,9 @@ import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import com.vaadin.componentfactory.Autocomplete.AutocompleteValueAppliedEvent;
 import com.vaadin.flow.component.KeyDownEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import java.util.Collections;
 import java.util.function.BiConsumer;
 
 /**
@@ -58,7 +60,7 @@ import java.util.function.BiConsumer;
  * @author Vaadin Ltd
  */
 @Tag("vcf-autocomplete")
-@NpmPackage(value = "@vaadin-component-factory/vcf-autocomplete", version = "1.2.7")
+@NpmPackage(value = "@vaadin-component-factory/vcf-autocomplete", version = "1.2.10")
 @JsModule("@vaadin-component-factory/vcf-autocomplete/src/vcf-autocomplete.js")
 public class Autocomplete extends
         PolymerTemplate<Autocomplete.AutocompleteTemplateModel> implements
@@ -76,6 +78,7 @@ public class Autocomplete extends
     private boolean dirty = false;
     private boolean finalValue = false;
     private String cachedValue = "";
+    private String oldValue = "";
     private ValueChangeListener<? super AutocompleteValueAppliedEvent> lastListener;
     BiConsumer<String, String> customListener = null;
     
@@ -90,7 +93,20 @@ public class Autocomplete extends
         addValueChangeListener((event) -> {
             finalValue = true;
         });
+//        addFocusListener((event) -> {
+//            String jsScript = "var objAc = document.getElementsByTagName(\"vcf-autocomplete-overlay\");";
+//            jsScript += "if (objAc[0] != null) {";";
+//            jsScript += "  var styleAc = objAc[0].getAttribute(\"style\");";
+//            jsScript += "  console.log(\"styleAc = \" + styleAc);";
+//            jsScript += "  objAc[0].style = styleAc.replace('display: none', '');";
+//            jsScript += "}";
+//            getElement().executeJs(jsScript);
+//        });
         addValueClearListener((event) -> {
+//            String jsScript = "var objAc = document.getElementsByTagName(\"vcf-autocomplete-overlay\");";
+//            jsScript += "var styleAc = objAc[0].getAttribute(\"style\");";
+//            jsScript += "if (objAc[0] != null) objAc[0].style = styleAc.replace('display: none', '');";
+//            getElement().executeJs(jsScript);
             cachedValue = "";
             dirty = true;
         });
@@ -98,10 +114,16 @@ public class Autocomplete extends
             cachedValue = event.getValue();
         });
         addChangeListener((event) -> {
+            if (!dirty)
+                oldValue = getValue();
             cachedValue = event.getValue();
             dirty = true;
         });
         textField.addBlurListener((event) -> {
+//            String jsScript = "var objAc = document.getElementsByTagName(\"vcf-autocomplete-overlay\");";
+//            jsScript += "var styleAc = objAc[0].getAttribute(\"style\");";
+//            jsScript += "if (objAc[0] != null) objAc[0].style = styleAc + \" display: none\";";
+//            getElement().executeJs(jsScript);
             if (customListener != null && dirty) {
                 customListener.accept("blur", cachedValue);
             }
@@ -117,6 +139,11 @@ public class Autocomplete extends
                 customListener.accept("applied", cachedValue);
             }
             dirty = false;
+//            textField.focus();
+//            String jsScript = "var objAc = document.getElementsByTagName(\"vcf-autocomplete-overlay\");";
+//            jsScript += "var styleAc = objAc.getAttribute(\"style\");";
+//            jsScript += "if (objAc[0] != null) objAc[0].style = styleAc + \" display: none\";";
+//            getElement().executeJs(jsScript);
         });
     }
 
@@ -525,4 +552,15 @@ public class Autocomplete extends
     public void addCustomChangeCallback(BiConsumer<String, String> listener) {
         customListener = listener;
     }
+    
+    public TextField getTextField() {
+        return textField;
+    }
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+
+
 }
